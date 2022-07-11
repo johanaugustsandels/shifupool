@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  app:
+    build: .
+    volumes:
+      - ./c++:/c++
+      - ./shifupool:/shifupool
+      - ./build.sh:/build.sh
+      - ./.bash_history:/root/.bash_history
