@@ -1,0 +1,71 @@
+<h1>Wallet: <div class="dib"> <%= format_wallet_big(@wallet) %> </div></h1>
+<h2>Active Workers</h2>
+<table class="tl w-100 collapse ba br2 b--black-20 pv2 ph pa2">
+  <thead>
+    <tr class="striped--light-gray br1 bb b--black-20">
+      <th>Name</th>
+      <th>Hashrate</th>
+      <th>Duration</th>
+    </tr>
+  </thead>
+  <tbody>
+  <%= for item <- @connections do %>
+    <tr>
+      <% m=HistoryChart.mangle(item.ip,item.worker_name) %>
+      <%= if item.worker_name != "" do %>
+        <td> <%= link item.worker_name , class: "dim black-70", to: Routes.page_path(@conn,:worker,Base.encode16(m)) %> </td>
+      <% else %>
+        <td></td>
+      <% end %>
+      <td> <%= format_hashrate(item.hashrate) %> </td>
+      <td><%= item.duration %> seconds</td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
+<h2>Rounds</h2>
+<h3>Not yet processed</h3>
+<table class="tl w-100 collapse ba br2 b--black-20 pv2 ph pa2">
+  <thead>
+    <tr class="striped--light-gray br1 bb b--black-20">
+      <th>Blocks</th>
+      <th>Shares</th>
+      <th>Reward</th>
+    </tr>
+  </thead>
+  <tbody>
+  <%= for [rbegin,rend,shares,total_shares,reward,total_reward,_] <- @urounds do %>
+    <tr>
+      <td> <%= link "#{rbegin} - #{format_end(rend,@roundend)}", class: "dim black-70", to: Routes.page_path(@conn,:round,rbegin) %> </td>
+      <td><%= shares %> of <%= total_shares %></td>
+      <td><%= format_payout(reward,total_reward,shares,total_shares) %></td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
+<p>Completed rounds are processed after <%= @delay %> blocks.</p>
+<h3>Processed</h3>
+<table class="tl w-100 collapse ba br2 b--black-20 pv2 ph pa2">
+  <thead>
+    <tr class="striped--light-gray br1 bb b--black-20">
+      <th>Blocks</th>
+      <th>Shares</th>
+      <th>Reward</th>
+      <th>Payout</th>
+    </tr>
+  </thead>
+  <tbody>
+  <%= for [rbegin,rend,shares,total_shares,reward,total_reward,tx] <- @prounds do %>
+    <tr>
+      <td> <%= link "#{rbegin} - #{rend}", class: "dim black-70", to: Routes.page_path(@conn,:round,rbegin) %> </td>
+      <td><%= shares %> of <%= total_shares %></td>
+      <td><%= format_bmb(reward)%> of <%= format_bmb(total_reward)%></td>
+      <td>
+        <div class="mw4 w-100 overflow-x-scroll">
+      <small><code><%= tx%></code></small>
+        </div>
+      </td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>

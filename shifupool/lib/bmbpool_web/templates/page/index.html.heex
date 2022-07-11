@@ -1,0 +1,107 @@
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+<h1>Pool Overview</h1>
+<h2>Current Round:</h2>
+<table class="tl w-100 collapse ba br2 b--black-10 pv2 ph">
+  <thead>
+    <tr class="striped--light-gray">
+      <th>Blocks</th>
+      <th>Total Shares</th>
+      <th>Pool Wallet</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td> <%= link "#{@state.round} - #{@state.round_end-1}", class: "dim black-70", to: Routes.page_path(@conn,:round,@state.round) %> </td>
+      <td> <%= @state.total_shares %> </td>
+      <td class="link"> <%= format_wallet(@state.wallet) %></td>
+    </tr>
+  </tbody>
+</table>
+<h2>Next Block:</h2>
+<table class="tl w-100 collapse ba br2 b--black-10 pv2 ph">
+  <thead>
+    <tr class="striped--light-gray">
+      <th>Height</th>
+      <th>Difficulty</th>
+      <th>Hashes tried</th>
+      <th>Workers</th>
+      <th>Hashrate</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><%= @state.height %></td>
+      <td><%= @state.difficulty %></td>
+      <td><%= @state.hashesBlock %></td>
+      <td><%= @connections %></td>
+      <td><%= format_hashrate(@state.hashrate10m) %></td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Check mining rewards</h2> 
+<%= form_for @conn, Routes.page_path(@conn, :wallet),  [method: :get], fn f -> %>
+    <label>
+    Wallet: <%= text_input f, :wallet %>
+  </label>
+  <%= submit "Search" %>
+<% end %>
+<h2>24h Hashrate:</h2>
+<canvas id="hashrateChart" width="750" height="500"></canvas>
+<script>
+const ctx = document.getElementById('hashrateChart').getContext('2d');
+const hashrateChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: [
+            <%= raw Enum.map(@chart, & "(new Date("<>Integer.to_string(elem(&1,0)*1000)<>")).toISOString()")|>Enum.join(", ") %>,  (new Date(<%=:os.system_time(:millisecond) %>)).toISOString()
+          ],
+        datasets: [{
+            label: 'hashrate in h/s (estimate)',
+            yAxisID: 'y',
+            data: [
+                <%= Enum.map(@chart, &to_string(elem(&1,1)))|>Enum.join(", ") %>, <%= to_string(@state.hashrate10m) %>
+              ],
+            borderColor: 'rgb(255, 159, 64)'
+          },{
+            label: 'workers',
+            yAxisID: 'w',
+            data: [
+                <%= Enum.map(@workers, &to_string(elem(&1,1)))|>Enum.join(", ") %>, <%= @connections %>
+              ],
+            borderColor: 'rgb(153, 102, 255)'
+          }
+          ]
+    },
+    options: {
+        responsive: false,
+        pointRadius: 1,
+        scales: {
+            y: {
+                beginAtZero: true,
+                display: true,
+                position: 'left',
+                title: {
+                    display: true,
+                    text: 'h/s'
+                }
+            },
+            w: {
+                beginAtZero: true,
+                display: true,
+                position: 'right',
+                title: {
+                    display: true,
+                    text: 'workers'
+                }
+            },
+            x: {
+                title: {
+                    type: 'timeseries',
+                    text: 'time'
+                }
+            }
+        }
+    }
+});
+</script>

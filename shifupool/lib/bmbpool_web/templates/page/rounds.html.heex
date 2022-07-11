@@ -1,0 +1,43 @@
+<h1>Rounds</h1>
+<h2>Not yet processed</h2>
+<table class="tl w-100 collapse ba br2 b--black-20 pv2 ph ">
+  <thead>
+    <tr class="striped--light-gray br1 bb b--black-20">
+      <th> Blocks </th>
+      <th> Total Shares </th>
+      <th> Pool Wallet </th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for [rstart,rend,shares,_, wallet]<- @urounds do %>
+  <tr>
+    <td> <%= link "#{rstart} - #{format_end(rend,@roundend)}", class: "dim black-70", to: Routes.page_path(@conn,:round,rstart) %> </td>
+    <td> <%= shares %> </td>
+    <td> <%= format_wallet(wallet) %> </td>
+  </tr>
+<% end %>
+  </tbody>
+</table>
+<p>Completed rounds are processed after <%= @delay %> blocks.</p>
+<h2>Processed</h2>
+<table class="tl w-100 collapse ba br2 b--black-20 pv2 ph pa2">
+  <thead>
+    <tr class="striped--light-gray br1 bb b--black-20">
+      <th> Blocks </th>
+      <th> Total Shares </th>
+      <th> Mined </th>
+      <th> Pool wallet </th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for [rstart,rend,shares,reward, wallet]<- @prounds do %>
+    <tr>
+      <td> <%= link "#{rstart} - #{rend}", class: "dim black-70", to: Routes.page_path(@conn,:round,rstart) %> </td>
+    <td> <%= shares %> </td>
+    <td> <%= format_reward(reward) %> </td>
+    
+    <td> <%= format_wallet(wallet) %> </td>
+  </tr>
+<% end %>
+  </tbody>
+</table>

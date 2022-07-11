@@ -1,0 +1,52 @@
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+<h1>Worker "<%= @worker_name %>"</h1>
+  <ul>
+<%= if !is_nil(@info) do %>
+    <li>State: online for <%= System.convert_time_unit(System.monotonic_time() - @info.start, :native, :second) %> seconds</li>
+    <li>Hashrate: <%= format_hashrate(@hashrate) %></li>
+<% else %>
+  <li>State: offline</li>
+<% end %>
+<li>24h Chart:</li>
+<canvas id="hashrateChart" width="750" height="500"></canvas>
+  </ul>
+<script>
+const ctx = document.getElementById('hashrateChart').getContext('2d');
+const hashrateChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: [
+            <%= raw Enum.map(@chart, & "(new Date("<>Integer.to_string(elem(&1,0)*1000)<>")).toISOString()")|>Enum.join(", ") %>,  (new Date(<%=:os.system_time(:millisecond) %>)).toISOString()
+          ],
+        datasets: [{
+            label: 'hashrate in h/s (estimate)',
+            yAxisID: 'y',
+            data: [
+                <%= Enum.map(@chart, &"#{elem(&1,1)}")|>Enum.join(", ") %>, <%= Float.to_string(@hashrate) %>
+              ],
+            borderColor: 'rgb(255, 159, 64)'
+        }]
+    },
+    options: {
+        responsive: false,
+        pointRadius: 1,
+        scales: {
+            y: {
+                beginAtZero: true,
+                display: true,
+                position: 'left',
+                title: {
+                    display: true,
+                    text: 'h/s'
+                }
+            },
+            x: {
+                title: {
+                    type: 'timeseries',
+                    text: 'time'
+                }
+            }
+        }
+    }
+});
+</script>

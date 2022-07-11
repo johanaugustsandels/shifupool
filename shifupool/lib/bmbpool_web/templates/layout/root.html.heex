@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <%= csrf_meta_tag() %>
+    <%= live_title_tag assigns[:page_title] || "Shifupool", suffix: " · Bamboo Mining Pool" %>
+    <link phx-track-static rel="stylesheet" href={Routes.static_path(@conn, "/assets/app.css")}/>
+    <script defer phx-track-static type="text/javascript" src={Routes.static_path(@conn, "/assets/app.js")}></script>
+  </head>
+  <body class="sans-serif">
+    <div class="center bg-white black-70 pa3">
+      <section class="center tc mw5 mw7-ns">
+        <h1>Welcome to Shifupool</h1>
+          <img class="br-pill" src={Routes.static_path(@conn, "/images/shifu_small.png")} alt="Shifupool Logo"/>
+      </section>
+    </div>
+    <div>
+    </div>
+    <main class="center mw7 bg-white black-70 pb4">
+      <header class="ph3 ph5-ns w-100 pv1 mb1 mb2-ns bt bb b--black-10 overflow-auto">
+        <div class="nowrap  center tc">
+          <%= link "Overview", to: Routes.page_path(@conn,:index), method: :get, class: "pv1-ns f6 fw6 dim link black-70 mr2 mr3-m mr4-l dib" %>
+          <%= link "Rounds", to: Routes.page_path(@conn,:rounds), method: :get, class: "pv1-ns f6 fw6 dim link black-70 mr2 mr3-m mr4-l dib" %>
+<%= form_for @conn, Routes.page_path(@conn, :wallet),  [method: :get, class: "pv1-ns f6 fw6 black-70 mr2 mr3-m mr4-l dib"], fn f -> %>
+    Wallet: <%= text_input f, :wallet %>
+  <%= submit "Check" ,class: "f6 fw6 link black-70 dib"%>
+<% end %>
+      </div>
+      </header>
+      <div>
+        <header>
+        <label class="fw6 dib">Note:</label>
+        <p class="dib">This is still alpha software. Pool fee is 4%. Max. 10 connections per IPv4.</p>
+        </header>
+      <%= @inner_content %>
+      </div>
+    </main>
+  </body>
+</html>

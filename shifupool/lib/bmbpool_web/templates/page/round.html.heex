@@ -1,0 +1,30 @@
+<h1>Round <%= @round %></h1>
+<table class="tl w-100 collapse ba br2 b--black-20 pv2 ph ">
+  <thead>
+    <tr class="striped--light-gray br1 bb b--black-20">
+      <th> Address </th>
+      <th> Shares </th>
+      <th> Proportion </th>
+      <th> Fee-adjusted </th>
+      <th> Payout </th>
+    </tr>
+  </thead>
+  <tbody>
+    <%= for {is_active,address,shares,prop,adj,payout}<- @list do %>
+  <tr>
+    <td> <%= format_active(is_active) %> <%= private_address(address) %> </td>
+    <td> <%= shares %> </td>
+    <td> <%=Float.round(prop*100,2) %>% </td>
+    <td> <%=Float.round(adj*100,2) %>% </td>
+    <td> <%=format_bmb(payout) %></td>
+  </tr>
+<% end %>
+<tr class="bt b--black-20">
+  <td>Total</td>
+  <td> <%= @total %></td>
+  <td>100%</td>
+  <td>95%</td>
+</tr>
+  </tbody>
+</table>
+Note: For privacy reasons addresses are truncated.
